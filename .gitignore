@@ -1,0 +1,6 @@
+# Playwright MCP logs & screenshots
+.playwright-mcp/
+*.png
+
+# Tasks (local workflow)
+tasks/

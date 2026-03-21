@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BINGO — Meliá Hotels International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+<style>
+/* ===== VARIABLES & RESET ===== */
+:root {
+  --bg: #090C10;
+  --bg-light: #0f1318;
+  --silver: #8A9BAE;
+  --gold: #C9A84C;
+  --gold-dark: #9a7e35;
+  --brand: #04ABCE;
+  --brand-dark: #038aa6;
+  --red: #C0392B;
+  --col-b: #04ABCE;
+  --col-i: #2EAD7A;
+  --col-n: #C9A84C;
+  --col-g: #D46B5A;
+  --col-o: #9B6FD0;
+  --text: #EDF1F5;
+  --text-dim: rgba(237,241,245,0.35);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 95%, rgba(4,171,206,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 40%, var(--bg-light) 0%, var(--bg) 70%);
+  color: var(--text);
+  font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Vignette overlay */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== PARTICLES CANVAS ===== */
+#particles {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.font-display { font-family: 'Bebas Neue', Impact, 'Arial Black', sans-serif; }
+.font-title  { font-family: 'Playfair Display', 'Georgia', serif; }
+.font-body   { font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif; }
+
+/* Material Symbols */
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: inherit;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  font-weight: 600; font-size: 19px;
+  padding: 14px 40px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  text-transform: uppercase; letter-spacing: 2px;
+  transition: transform 0.15s, box-shadow 0.25s;
+  position: relative; overflow: hidden;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0); transition: background 0.2s;
+}
+.btn:hover::after { background: rgba(255,255,255,0.08); }
+.btn:hover  { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  border: 1px solid rgba(201,168,76,0.3);
+  box-shadow: 0 4px 24px rgba(4,171,206,0.3);
+}
+.btn-gold:hover { box-shadow: 0 6px 32px rgba(4,171,206,0.5); }
+
+.btn-red {
+  background: linear-gradient(135deg, var(--red), #8e2218);
+  color: white;
+  box-shadow: 0 4px 20px rgba(192,57,43,0.25);
+}
+.btn-red:hover { box-shadow: 0 6px 28px rgba(192,57,43,0.45); }
+
+.btn-outline {
+  background: rgba(255,255,255,0.04); color: var(--text);
+  border: 1px solid rgba(138,155,174,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn-outline:hover { border-color: var(--brand); color: var(--brand); }
+
+.btn-icon {
+  width: 52px; height: 52px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  color: var(--text); font-size: 24px;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.12); }
+
+/* ===== SCREENS ===== */
+.screen {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none; z-index: 1;
+}
+.screen.active { display: flex; }
+
+/* ===== WELCOME SCREEN ===== */
+#screen-welcome {
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 40px; z-index: 2;
+}
+
+.welcome-resort {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700; font-size: 30px;
+  letter-spacing: 8px;
+  color: var(--gold);
+  text-transform: uppercase;
+  opacity: 0; animation: fade-up 0.8s 0.2s ease both;
+}
+
+.welcome-ornament {
+  display: flex; align-items: center; gap: 16px;
+  color: var(--gold);
+  opacity: 0; animation: fade-up 0.5s 0.7s ease both;
+  margin-top: -8px;
+}
+.welcome-ornament .line {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.welcome-ornament .diamond {
+  font-size: 12px; opacity: 0.8;
+}
+
+.welcome-title {
+  display: flex; gap: 24px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 160px; font-weight: 900;
+}
+.welcome-title span {
+  display: inline-block;
+  opacity: 0; animation: elegant-letter-in 0.6s ease both;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+.welcome-title span:nth-child(1) { color: var(--col-b); animation-delay: 0.9s; }
+.welcome-title span:nth-child(2) { color: var(--col-i); animation-delay: 1.05s; }
+.welcome-title span:nth-child(3) { color: var(--col-n); animation-delay: 1.2s; }
+.welcome-title span:nth-child(4) { color: var(--col-g); animation-delay: 1.35s; }
+.welcome-title span:nth-child(5) { color: var(--col-o); animation-delay: 1.5s; }
+
+.welcome-btn-wrap {
+  opacity: 0; animation: fade-up 0.5s 1.8s ease both;
+}
+
+/* ===== GAME SCREEN ===== */
+#screen-game {
+  flex-direction: column;
+  padding: 16px 36px 12px;
+  position: relative;
+}
+#screen-game > *:not(.game-bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; flex-shrink: 0;
+}
+.header-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700; font-size: 22px;
+  letter-spacing: 8px; color: var(--gold);
+  text-transform: uppercase;
+}
+.header-title {
+  display: flex; gap: 10px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px; font-weight: 900;
+}
+.header-title span:nth-child(1) { color: var(--col-b); }
+.header-title span:nth-child(2) { color: var(--col-i); }
+.header-title span:nth-child(3) { color: var(--col-n); }
+.header-title span:nth-child(4) { color: var(--col-g); }
+.header-title span:nth-child(5) { color: var(--col-o); }
+
+/* Current Number Area */
+.current-area {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex: 1.3; min-height: 0;
+  padding: 8px 0;
+}
+
+/* Bingo Ball */
+.bingo-ball {
+  width: min(400px, 38vh); height: min(400px, 38vh);
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55) 0%, transparent 35%),
+    radial-gradient(circle at 50% 50%, var(--ball-color, var(--gold)) 0%, var(--ball-dark, var(--gold-dark)) 100%);
+  box-shadow:
+    0 10px 50px rgba(0,0,0,0.6),
+    0 0 60px var(--ball-glow, rgba(201,168,76,0.25)),
+    0 0 120px var(--ball-glow, rgba(201,168,76,0.12)),
+    inset 0 -10px 25px rgba(0,0,0,0.35),
+    inset 0 4px 12px rgba(255,255,255,0.08);
+}
+.bingo-ball.animate { animation: ball-reveal 0.6s ease both; }
+
+.ball-letter {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 48px; font-weight: 900;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: -2px;
+}
+.ball-stripe {
+  background: rgba(255,255,255,0.95);
+  border-radius: 8px;
+  padding: 0 40px; margin: 2px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.ball-number {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 150px; line-height: 1.05;
+  color: #1a1a1a;
+}
+
+.ball-empty {
+  width: min(400px, 38vh); height: min(400px, 38vh);
+  border-radius: 50%;
+  border: 3px dashed rgba(138,155,174,0.2);
+  display: flex; align-items: center; justify-content: center;
+}
+.ball-empty span {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 60px; color: rgba(138,155,174,0.15);
+}
+
+/* Ball Column Colors */
+.bingo-ball.col-b { --ball-color: #1abfe0; --ball-dark: #037d99; --ball-glow: rgba(4,171,206,0.3); }
+.bingo-ball.col-i { --ball-color: #3cc08d; --ball-dark: #1d8a5c; --ball-glow: rgba(46,173,122,0.3); }
+.bingo-ball.col-n { --ball-color: #d4b55a; --ball-dark: #9a7e35; --ball-glow: rgba(201,168,76,0.3); }
+.bingo-ball.col-g { --ball-color: #e07d6c; --ball-dark: #a84f42; --ball-glow: rgba(212,107,90,0.3); }
+.bingo-ball.col-o { --ball-color: #ab82d8; --ball-dark: #7450a0; --ball-glow: rgba(155,111,208,0.3); }
+
+/* Progress Bar */
+.progress-wrap {
+  width: 360px; height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  margin-top: 14px; overflow: hidden;
+  transition: opacity 0.3s;
+}
+.progress-bar {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--brand-dark));
+  border-radius: 3px;
+  transform-origin: left;
+  box-shadow: 0 0 8px rgba(4,171,206,0.4);
+}
+
+/* Recent Strip */
+.recent-strip {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; height: 36px; flex-shrink: 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 4px 0;
+}
+.recent-label {
+  font-size: 14px; color: var(--silver);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-right: 4px;
+}
+.recent-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: 50%;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 20px; color: white;
+  animation: smooth-pop 0.35s ease both;
+}
+
+/* History Grid */
+.grid-wrap {
+  flex: 0.9; min-height: 0;
+  display: flex; flex-direction: column;
+  padding: 0 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 4px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 50px repeat(15, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 3px; flex: 1; min-height: 0;
+}
+.grid-label {
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px; font-weight: 900;
+}
+.grid-cell {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 5px;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 28px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-dim);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.35s ease;
+}
+.grid-cell.drawn {
+  color: white; font-weight: 700;
+  border-color: transparent;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.15);
+  animation: cell-scale 0.35s ease;
+}
+.grid-cell.drawn.col-b { background: linear-gradient(135deg, var(--col-b), #038aa6); }
+.grid-cell.drawn.col-i { background: linear-gradient(135deg, var(--col-i), #1d8a5c); }
+.grid-cell.drawn.col-n { background: linear-gradient(135deg, var(--col-n), #9a7e35); }
+.grid-cell.drawn.col-g { background: linear-gradient(135deg, var(--col-g), #a84f42); }
+.grid-cell.drawn.col-o { background: linear-gradient(135deg, var(--col-o), #7450a0); }
+.grid-cell.last-drawn {
+  box-shadow: 0 0 12px 2px currentColor;
+  transform: scale(1.1); z-index: 2;
+}
+
+/* Footer */
+.footer {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; flex-shrink: 0;
+  padding: 0 10px;
+}
+.counter {
+  font-size: 18px; color: var(--silver); letter-spacing: 0.5px;
+}
+.counter strong {
+  color: var(--brand); font-size: 26px;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+}
+.controls { display: flex; gap: 10px; }
+
+/* ===== OVERLAYS ===== */
+.overlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 40px; z-index: 10;
+  background: rgba(9,12,16,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.overlay.active { display: flex; }
+
+.bingo-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 160px; font-weight: 900;
+  color: var(--gold);
+  text-shadow:
+    0 0 40px rgba(201,168,76,0.8),
+    0 0 100px rgba(201,168,76,0.3),
+    0 6px 20px rgba(0,0,0,0.5);
+  animation: bingo-glow 0.8s ease infinite alternate;
+}
+.bingo-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px; font-weight: 300;
+  color: var(--silver);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: -20px;
+  opacity: 0; animation: fade-up 0.6s 0.3s ease both;
+}
+.fin-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 52px; font-weight: 700;
+  color: var(--silver);
+  text-align: center;
+}
+.fin-sub {
+  font-size: 20px; color: rgba(138,155,174,0.5);
+  margin-top: -20px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes ball-reveal {
+  0%   { transform: scale(0.6); opacity: 0; filter: blur(12px); }
+  50%  { opacity: 1; filter: blur(3px); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes cell-scale {
+  0%   { transform: scale(0.85); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bingo-glow {
+  from { transform: scale(1);    text-shadow: 0 0 40px rgba(201,168,76,0.8), 0 0 100px rgba(201,168,76,0.3); }
+  to   { transform: scale(1.02); text-shadow: 0 0 60px rgba(201,168,76,0.9), 0 0 140px rgba(201,168,76,0.5); }
+}
+
+@keyframes elegant-letter-in {
+  0%   { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes smooth-pop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  70%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ===== GAME BACKGROUND — Bingo Balls SVG ===== */
+.game-bg {
+  position: fixed;
+  top: -8%; left: -8%;
+  width: 116%; height: 116%;
+  z-index: 0;
+  pointer-events: none;
+  animation: bg-drift 55s ease-in-out infinite alternate;
+}
+
+@keyframes bg-drift {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(3%, -2%); }
+  100% { transform: translate(-1%, 2.5%); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ===== WELCOME SCREEN ===== -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-resort">Meliá Hotels International</div>
+  <div class="welcome-ornament">
+    <span class="line"></span>
+    <span class="diamond">◆</span>
+    <span class="line"></span>
+  </div>
+  <div class="welcome-title">
+    <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+  </div>
+  <div class="welcome-btn-wrap">
+    <button class="btn btn-gold" id="btn-start" style="font-size:24px; padding:18px 64px; border: 1px solid rgba(201,168,76,0.4);">
+      Iniciar Juego
+    </button>
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="screen-game" class="screen">
+  <!-- Animated Background — Bingo Balls -->
+  <svg class="game-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <filter id="bg-soft"><feGaussianBlur stdDeviation="1.5"/></filter>
+    </defs>
+    <!-- Decorative rings -->
+    <circle cx="350" cy="450" r="260" fill="none" stroke="#C9A84C" stroke-width="0.8" opacity="0.04"/>
+    <circle cx="1250" cy="320" r="300" fill="none" stroke="#04ABCE" stroke-width="0.8" opacity="0.03"/>
+    <circle cx="800" cy="750" r="200" fill="none" stroke="#9B6FD0" stroke-width="0.6" opacity="0.03"/>
+    <!-- Ball B-7 -->
+    <g opacity="0.09" filter="url(#bg-soft)">
+      <circle cx="120" cy="160" r="52" fill="#04ABCE"/>
+      <rect x="68" y="148" width="104" height="24" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="120" y="166" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="#04ABCE">7</text>
+    </g>
+    <!-- Ball N-34 -->
+    <g opacity="0.07" filter="url(#bg-soft)">
+      <circle cx="460" cy="95" r="68" fill="#C9A84C"/>
+      <rect x="392" y="80" width="136" height="30" rx="6" fill="rgba(255,255,255,0.85)"/>
+      <text x="460" y="102" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#C9A84C">34</text>
+    </g>
+    <!-- Ball O-68 -->
+    <g opacity="0.08" filter="url(#bg-soft)">
+      <circle cx="1380" cy="190" r="55" fill="#9B6FD0"/>
+      <rect x="1325" y="177" width="110" height="26" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="1380" y="196" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#9B6FD0">68</text>
+    </g>
+    <!-- Ball I-22 -->
+    <g opacity="0.07" filter="url(#bg-soft)">
+      <circle cx="920" cy="760" r="60" fill="#2EAD7A"/>
+      <rect x="860" y="747" width="120" height="26" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="920" y="766" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#2EAD7A">22</text>
+    </g>
+    <!-- Ball G-52 -->
+    <g opacity="0.06" filter="url(#bg-soft)">
+      <circle cx="1460" cy="670" r="48" fill="#D46B5A"/>
+      <rect x="1412" y="659" width="96" height="22" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="1460" y="675" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#D46B5A">52</text>
+    </g>
+    <!-- Ball B-12 -->
+    <g opacity="0.06" filter="url(#bg-soft)">
+      <circle cx="230" cy="710" r="70" fill="#04ABCE"/>
+      <rect x="160" y="695" width="140" height="30" rx="6" fill="rgba(255,255,255,0.85)"/>
+      <text x="230" y="716" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="bold" fill="#04ABCE">12</text>
+    </g>
+    <!-- Ball N-41 -->
+    <g opacity="0.05" filter="url(#bg-soft)">
+      <circle cx="1100" cy="120" r="78" fill="#C9A84C"/>
+      <rect x="1022" y="104" width="156" height="32" rx="6" fill="rgba(255,255,255,0.85)"/>
+      <text x="1100" y="127" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#C9A84C">41</text>
+    </g>
+    <!-- Ball O-75 (large, center-ish) -->
+    <g opacity="0.04" filter="url(#bg-soft)">
+      <circle cx="720" cy="420" r="88" fill="#9B6FD0"/>
+      <rect x="632" y="403" width="176" height="34" rx="7" fill="rgba(255,255,255,0.85)"/>
+      <text x="720" y="427" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="bold" fill="#9B6FD0">75</text>
+    </g>
+    <!-- Ball G-49 -->
+    <g opacity="0.06" filter="url(#bg-soft)">
+      <circle cx="60" cy="480" r="45" fill="#D46B5A"/>
+      <rect x="15" y="469" width="90" height="22" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="60" y="485" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#D46B5A">49</text>
+    </g>
+    <!-- Ball I-28 -->
+    <g opacity="0.05" filter="url(#bg-soft)">
+      <circle cx="1520" cy="440" r="58" fill="#2EAD7A"/>
+      <rect x="1462" y="427" width="116" height="26" rx="5" fill="rgba(255,255,255,0.85)"/>
+      <text x="1520" y="446" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#2EAD7A">28</text>
+    </g>
+    <!-- Sparkle accents -->
+    <polygon points="800,45 804,58 818,58 807,66 811,79 800,71 789,79 793,66 782,58 796,58" fill="#C9A84C" opacity="0.06"/>
+    <polygon points="280,380 283,389 293,389 285,395 288,404 280,398 272,404 275,395 267,389 277,389" fill="#04ABCE" opacity="0.04"/>
+    <polygon points="1300,550 1303,559 1313,559 1305,565 1308,574 1300,568 1292,574 1295,565 1287,559 1297,559" fill="#C9A84C" opacity="0.05"/>
+  </svg>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">Meliá</div>
+    <div class="header-title">
+      <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+    </div>
+    <button class="btn-icon" id="btn-sound" title="Sonido">
+      <span class="material-symbols-rounded">volume_up</span>
+    </button>
+  </div>
+
+  <!-- Current Number -->
+  <div class="current-area">
+    <div id="ball-display">
+      <div class="ball-empty"><span>?</span></div>
+    </div>
+    <div class="progress-wrap" id="progress-wrap" style="opacity:0.2">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Recent Numbers -->
+  <div class="recent-strip" id="recent-strip">
+    <span class="recent-label">Últimos:</span>
+  </div>
+
+  <!-- History Grid -->
+  <div class="grid-wrap">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- Footer: Counter + Controls -->
+  <div class="footer">
+    <div class="counter">
+      Números cantados: <strong id="counter">0</strong> / 75
+    </div>
+    <div class="controls">
+      <button class="btn btn-outline" id="btn-pause">Pausar</button>
+      <button class="btn btn-gold"    id="btn-bingo">¡BINGO!</button>
+      <button class="btn btn-red"     id="btn-new">Nuevo Juego</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BINGO OVERLAY ===== -->
+<div id="overlay-bingo" class="overlay">
+  <div class="bingo-text">¡BINGO!</div>
+  <div class="bingo-sub">¡Tenemos un ganador!</div>
+  <button class="btn btn-gold" id="btn-new-bingo" style="font-size:20px;">Nuevo Juego</button>
+</div>
+
+<!-- ===== FIN OVERLAY ===== -->
+<div id="overlay-fin" class="overlay">
+  <div class="fin-text">Todos los números<br>han sido cantados</div>
+  <div class="fin-sub">75 / 75</div>
+  <button class="btn btn-gold" id="btn-new-fin">Nuevo Juego</button>
+</div>
+
+<script>
+// ======================================================================
+//  CONFIGURATION
+// ======================================================================
+const DRAW_INTERVAL_MS = 8000; // Time between draws (ms) — adjust here
+
+// Column definitions
+const COLS = [
+  { letter: 'B', color: '#04ABCE', start: 1,  end: 15 },
+  { letter: 'I', color: '#2EAD7A', start: 16, end: 30 },
+  { letter: 'N', color: '#C9A84C', start: 31, end: 45 },
+  { letter: 'G', color: '#D46B5A', start: 46, end: 60 },
+  { letter: 'O', color: '#9B6FD0', start: 61, end: 75 },
+];
+
+// ======================================================================
+//  STATE
+// ======================================================================
+let state = 'INICIO'; // INICIO | EN_JUEGO | EN_PAUSA | BINGO | FIN
+let numbers = [];      // shuffled 1-75
+let drawIndex = 0;
+let drawnSet = new Set();
+let timerId = null;
+let progressStart = 0;
+let progressRAF = null;
+let soundEnabled = true;
+let audioCtx = null;
+let particleMode = 'ambient'; // 'ambient' | 'victory'
+
+// ======================================================================
+//  HELPERS
+// ======================================================================
+function getCol(n) {
+  return COLS[Math.floor((n - 1) / 15)];
+}
+
+function colClass(n) {
+  return 'col-' + getCol(n).letter.toLowerCase();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ======================================================================
+//  DOM REFERENCES
+// ======================================================================
+const $ = (id) => document.getElementById(id);
+const screenWelcome = $('screen-welcome');
+const screenGame    = $('screen-game');
+const overlayBingo  = $('overlay-bingo');
+const overlayFin    = $('overlay-fin');
+const ballDisplay   = $('ball-display');
+const progressWrap  = $('progress-wrap');
+const progressBar   = $('progress-bar');
+const recentStrip   = $('recent-strip');
+const gridEl        = $('grid');
+const counterEl     = $('counter');
+const btnPause      = $('btn-pause');
+const btnSound      = $('btn-sound');
+
+// ======================================================================
+//  GRID BUILDER
+// ======================================================================
+function buildGrid() {
+  gridEl.innerHTML = '';
+  COLS.forEach((col) => {
+    // Row label
+    const label = document.createElement('div');
+    label.className = 'grid-label';
+    label.style.color = col.color;
+    label.textContent = col.letter;
+    gridEl.appendChild(label);
+
+    // 15 cells per row
+    for (let n = col.start; n <= col.end; n++) {
+      const cell = document.createElement('div');
+      cell.className = 'grid-cell ' + colClass(n);
+      cell.id = 'cell-' + n;
+      cell.textContent = n;
+      gridEl.appendChild(cell);
+    }
+  });
+}
+
+// ======================================================================
+//  SCREEN MANAGEMENT
+// ======================================================================
+function showScreen(name) {
+  screenWelcome.classList.remove('active');
+  screenGame.classList.remove('active');
+  overlayBingo.classList.remove('active');
+  overlayFin.classList.remove('active');
+
+  switch (name) {
+    case 'welcome': screenWelcome.classList.add('active'); break;
+    case 'game':    screenGame.classList.add('active'); break;
+    case 'bingo':   screenGame.classList.add('active'); overlayBingo.classList.add('active'); break;
+    case 'fin':     screenGame.classList.add('active'); overlayFin.classList.add('active'); break;
+  }
+}
+
+// ======================================================================
+//  BALL RENDERING
+// ======================================================================
+function renderBall(num) {
+  const col = getCol(num);
+  ballDisplay.innerHTML =
+    '<div class="bingo-ball ' + colClass(num) + ' animate">' +
+      '<div class="ball-letter">' + col.letter + '</div>' +
+      '<div class="ball-stripe">' +
+        '<div class="ball-number">' + num + '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderEmptyBall() {
+  ballDisplay.innerHTML = '<div class="ball-empty"><span>?</span></div>';
+}
+
+// ======================================================================
+//  RECENT STRIP
+// ======================================================================
+function updateRecent() {
+  let html = '<span class="recent-label">Últimos:</span>';
+  const count = Math.min(drawIndex, 10);
+  for (let i = drawIndex - 1; i >= drawIndex - count; i--) {
+    const n = numbers[i];
+    const c = getCol(n);
+    html += '<span class="recent-num" style="background:' + c.color + '">' + n + '</span>';
+  }
+  recentStrip.innerHTML = html;
+}
+
+// ======================================================================
+//  GRID MARK
+// ======================================================================
+function markDrawn(num) {
+  const cell = $('cell-' + num);
+  if (!cell) return;
+  // Remove previous last-drawn
+  const prev = gridEl.querySelector('.last-drawn');
+  if (prev) prev.classList.remove('last-drawn');
+  // Mark
+  cell.classList.add('drawn');
+  cell.classList.add('last-drawn');
+}
+
+// ======================================================================
+//  PROGRESS BAR
+// ======================================================================
+function startProgress() {
+  progressStart = performance.now();
+  progressWrap.style.opacity = '1';
+  cancelAnimationFrame(progressRAF);
+
+  (function tick() {
+    const elapsed = performance.now() - progressStart;
+    const pct = Math.max(0, 1 - elapsed / DRAW_INTERVAL_MS);
+    progressBar.style.transform = 'scaleX(' + pct + ')';
+    if (state === 'EN_JUEGO') progressRAF = requestAnimationFrame(tick);
+  })();
+}
+
+function stopProgress() {
+  cancelAnimationFrame(progressRAF);
+  progressWrap.style.opacity = '0.2';
+  progressBar.style.transform = 'scaleX(0)';
+}
+
+// ======================================================================
+//  DRAW LOGIC
+// ======================================================================
+function drawNext() {
+  if (drawIndex >= 75) { endGame(); return; }
+
+  const num = numbers[drawIndex++];
+  drawnSet.add(num);
+
+  renderBall(num);
+  markDrawn(num);
+  updateRecent();
+  counterEl.textContent = drawIndex;
+
+  if (soundEnabled) playDrawSound();
+  if (drawIndex >= 75) { setTimeout(endGame, 1500); return; }
+
+  startProgress();
+}
+
+// ======================================================================
+//  GAME CONTROL
+// ======================================================================
+function startGame() {
+  numbers = shuffle(Array.from({ length: 75 }, (_, i) => i + 1));
+  drawIndex = 0;
+  drawnSet.clear();
+
+  buildGrid();
+  renderEmptyBall();
+  updateRecent();
+  counterEl.textContent = '0';
+  btnPause.textContent = 'Pausar';
+  progressBar.style.transform = 'scaleX(1)';
+
+  showScreen('game');
+  initAudio();
+
+  state = 'EN_JUEGO';
+  particleMode = 'ambient';
+
+  // First draw immediately
+  drawNext();
+  timerId = setInterval(drawNext, DRAW_INTERVAL_MS);
+}
+
+function pauseGame() {
+  if (state === 'EN_JUEGO') {
+    state = 'EN_PAUSA';
+    clearInterval(timerId);
+    stopProgress();
+    btnPause.textContent = 'Reanudar';
+  } else if (state === 'EN_PAUSA') {
+    state = 'EN_JUEGO';
+    startProgress();
+    timerId = setInterval(drawNext, DRAW_INTERVAL_MS);
+    btnPause.textContent = 'Pausar';
+  }
+}
+
+function declareBingo() {
+  if (state !== 'EN_JUEGO' && state !== 'EN_PAUSA') return;
+  state = 'BINGO';
+  clearInterval(timerId);
+  stopProgress();
+  particleMode = 'victory';
+  if (soundEnabled) playVictorySound();
+  showScreen('bingo');
+}
+
+function endGame() {
+  state = 'FIN';
+  clearInterval(timerId);
+  stopProgress();
+  showScreen('fin');
+}
+
+function newGame() {
+  clearInterval(timerId);
+  cancelAnimationFrame(progressRAF);
+  state = 'INICIO';
+  particleMode = 'ambient';
+  showScreen('welcome');
+  // Re-trigger welcome animations
+  screenWelcome.style.animation = 'none';
+  screenWelcome.offsetHeight; // reflow
+  screenWelcome.style.animation = '';
+}
+
+// ======================================================================
+//  AUDIO ENGINE  (Web Audio API — no external files)
+// ======================================================================
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playDrawSound() {
+  if (!audioCtx || audioCtx.state !== 'running') return;
+  const now = audioCtx.currentTime;
+
+  // --- Ball rolling: filtered noise burst ---
+  const sr = audioCtx.sampleRate;
+  const len = Math.floor(sr * 0.55);
+  const buf = audioCtx.createBuffer(1, len, sr);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buf;
+
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.setValueAtTime(700, now);
+  bp.frequency.linearRampToValueAtTime(1800, now + 0.35);
+  bp.Q.value = 2.5;
+
+  const ng = audioCtx.createGain();
+  ng.gain.setValueAtTime(0.03, now);
+  ng.gain.linearRampToValueAtTime(0.10, now + 0.25);
+  ng.gain.linearRampToValueAtTime(0, now + 0.55);
+
+  noise.connect(bp).connect(ng).connect(audioCtx.destination);
+  noise.start(now); noise.stop(now + 0.55);
+
+  // --- Ding tone ---
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine'; osc.frequency.value = 932; // Bb5
+  const og = audioCtx.createGain();
+  og.gain.setValueAtTime(0.22, now + 0.45);
+  og.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+  osc.connect(og).connect(audioCtx.destination);
+  osc.start(now + 0.45); osc.stop(now + 1.0);
+
+  // --- Second harmonic ---
+  const osc2 = audioCtx.createOscillator();
+  osc2.type = 'sine'; osc2.frequency.value = 1864; // Bb6
+  const og2 = audioCtx.createGain();
+  og2.gain.setValueAtTime(0.08, now + 0.46);
+  og2.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+  osc2.connect(og2).connect(audioCtx.destination);
+  osc2.start(now + 0.46); osc2.stop(now + 0.85);
+}
+
+function playVictorySound() {
+  if (!audioCtx || audioCtx.state !== 'running') return;
+  const now = audioCtx.currentTime;
+
+  // Ascending arpeggio: C5 → E5 → G5 → C6
+  const notes = [523.25, 659.25, 783.99, 1046.50];
+
+  notes.forEach((freq, i) => {
+    const t = now + i * 0.13;
+
+    const osc = audioCtx.createOscillator();
+    osc.type = 'triangle'; osc.frequency.value = freq;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.22, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.55);
+  });
+
+  // Sustained final chord
+  const ct = now + 0.55;
+  notes.forEach((freq) => {
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.10, ct);
+    g.gain.exponentialRampToValueAtTime(0.001, ct + 2.5);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(ct); osc.stop(ct + 2.5);
+  });
+
+  // Triumphant fifth on top
+  const osc5 = audioCtx.createOscillator();
+  osc5.type = 'triangle'; osc5.frequency.value = 1567.98; // G6
+  const g5 = audioCtx.createGain();
+  g5.gain.setValueAtTime(0.08, ct + 0.1);
+  g5.gain.exponentialRampToValueAtTime(0.001, ct + 2.0);
+  osc5.connect(g5).connect(audioCtx.destination);
+  osc5.start(ct + 0.1); osc5.stop(ct + 2.0);
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  btnSound.innerHTML = soundEnabled
+    ? '<span class="material-symbols-rounded">volume_up</span>'
+    : '<span class="material-symbols-rounded">volume_off</span>';
+}
+
+// ======================================================================
+//  PARTICLE SYSTEM — "Pool Night" Bokeh
+// ======================================================================
+const canvas = $('particles');
+const pCtx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+const BOKEH_COLORS = ['#04ABCE', '#C9A84C', '#2EAD7A', '#9B6FD0'];
+const CONFETTI_COLORS = ['#C9A84C', '#04ABCE', '#C9A84C', '#04ABCE', '#C9A84C', '#EDF1F5'];
+
+class Particle {
+  constructor(mode) { this.init(mode); }
+
+  init(mode) {
+    if (mode === 'victory') {
+      this.x = Math.random() * canvas.width;
+      this.y = -20 - Math.random() * 40;
+      this.vx = (Math.random() - 0.5) * 6;
+      this.vy = Math.random() * 3 + 1.5;
+      this.w = Math.random() * 10 + 5;
+      this.h = Math.random() * 6 + 3;
+      this.rot = Math.random() * Math.PI * 2;
+      this.rv = (Math.random() - 0.5) * 0.15;
+      this.color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      this.life = 1;
+      this.decay = 0.002 + Math.random() * 0.004;
+      this.type = 'confetti';
+    } else {
+      // Bokeh circles — large, slow, very transparent
+      this.radius = 20 + Math.random() * 40;
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.2;
+      this.vy = (Math.random() - 0.5) * 0.15;
+      this.color = BOKEH_COLORS[Math.floor(Math.random() * BOKEH_COLORS.length)];
+      this.life = 1;
+      this.decay = 0.0008 + Math.random() * 0.0012;
+      this.type = 'bokeh';
+      this.maxAlpha = 0.03 + Math.random() * 0.03;
+    }
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+    if (this.type === 'confetti') {
+      this.vy += 0.04; // gravity
+      this.rot += this.rv;
+      this.vx *= 0.999;
+    }
+    return this.life > 0;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    if (this.type === 'confetti') {
+      ctx.globalAlpha = Math.min(this.life * 0.7, 0.7);
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+    } else {
+      // Bokeh: soft circle with radial gradient
+      ctx.globalAlpha = this.life * this.maxAlpha;
+      const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+      grad.addColorStop(0, this.color);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function animateParticles() {
+  pCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const maxCount = particleMode === 'victory' ? 200 : 18;
+  const spawnBurst = particleMode === 'victory' ? 4 : 1;
+
+  if (particles.length < maxCount) {
+    for (let i = 0; i < spawnBurst; i++) {
+      if (Math.random() < (particleMode === 'victory' ? 0.35 : 0.12)) {
+        particles.push(new Particle(particleMode));
+      }
+    }
+  }
+
+  particles = particles.filter((p) => {
+    if (p.update()) { p.draw(pCtx); return true; }
+    return false;
+  });
+
+  requestAnimationFrame(animateParticles);
+}
+
+// ======================================================================
+//  EVENT HANDLERS
+// ======================================================================
+$('btn-start').addEventListener('click', startGame);
+btnPause.addEventListener('click', pauseGame);
+$('btn-bingo').addEventListener('click', declareBingo);
+$('btn-new').addEventListener('click', newGame);
+$('btn-new-bingo').addEventListener('click', newGame);
+$('btn-new-fin').addEventListener('click', newGame);
+btnSound.addEventListener('click', toggleSound);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (state === 'INICIO') startGame();
+    else if (state === 'EN_JUEGO' || state === 'EN_PAUSA') pauseGame();
+  }
+  if (e.code === 'KeyB' && (state === 'EN_JUEGO' || state === 'EN_PAUSA')) declareBingo();
+  if (e.code === 'KeyM') toggleSound();
+});
+
+window.addEventListener('resize', resizeCanvas);
+
+// ======================================================================
+//  INIT
+// ======================================================================
+resizeCanvas();
+buildGrid();
+animateParticles();
+</script>
+</body>
+</html>
