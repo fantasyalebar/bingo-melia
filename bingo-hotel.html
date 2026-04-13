@@ -1015,6 +1015,7 @@ body::after {
 //  CONFIGURATION
 // ======================================================================
 const DRAW_INTERVAL_MS = 10000;
+function currentInterval() { return PATTERNS[selectedPattern].interval; }
 const TOTAL_BALLS = 75;
 
 // Column definitions
@@ -1030,14 +1031,10 @@ const COLS = [
 //  PATTERNS
 // ======================================================================
 const PATTERNS = {
-  completo:    { name: 'Completo',    grid: [1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1] },
-  horizontal:  { name: 'Línea H',    grid: [0,0,0,0,0, 0,0,0,0,0, 1,1,1,1,1, 0,0,0,0,0, 0,0,0,0,0] },
-  vertical:    { name: 'Línea V',    grid: [0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0] },
-  diagonal:    { name: 'Diagonal',   grid: [1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1] },
-  esquinas:    { name: 'Esquinas',   grid: [1,0,0,0,1, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 1,0,0,0,1] },
-  cruz:        { name: 'Cruz',       grid: [0,0,1,0,0, 0,0,1,0,0, 1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0] },
-  equis:       { name: 'X',          grid: [1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1] },
-  marco:       { name: 'Marco',      grid: [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1] },
+  completo:   { name: 'Completo', grid: [1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1], interval: 10000 },
+  horizontal: { name: 'Línea H', grid: [0,0,0,0,0, 0,0,0,0,0, 1,1,1,1,1, 0,0,0,0,0, 0,0,0,0,0], interval: 10000 },
+  vertical:   { name: 'Línea V', grid: [0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0], interval: 10000 },
+  speed:      { name: 'Speed ⚡', grid: [1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1], interval: 3000 },
 };
 
 // ======================================================================
@@ -1049,6 +1046,7 @@ let drawIndex = 0;
 let timerId = null;
 let progressStart = 0;
 let progressRAF = null;
+let progressElapsedAtPause = 0;
 let soundEnabled = true;
 let audioCtx = null;
 let particleMode = 'ambient';
@@ -1198,14 +1196,14 @@ function markDrawn(num) {
 // ======================================================================
 //  PROGRESS BAR
 // ======================================================================
-function startProgress() {
-  progressStart = performance.now();
+function startProgress(elapsedOffset) {
+  progressStart = performance.now() - (elapsedOffset || 0);
   progressWrap.style.opacity = '1';
   cancelAnimationFrame(progressRAF);
 
   (function tick() {
     const elapsed = performance.now() - progressStart;
-    const pct = Math.max(0, 1 - elapsed / DRAW_INTERVAL_MS);
+    const pct = Math.max(0, 1 - elapsed / currentInterval());
     progressBar.style.transform = 'scaleX(' + pct + ')';
     if (state === 'EN_JUEGO') progressRAF = requestAnimationFrame(tick);
   })();
@@ -1385,19 +1383,25 @@ function startGame() {
   particleMode = 'ambient';
 
   drawNext();
-  timerId = setInterval(drawNext, DRAW_INTERVAL_MS);
+  timerId = setInterval(drawNext, currentInterval());
 }
 
 function pauseGame() {
   if (state === 'EN_JUEGO') {
     state = 'EN_PAUSA';
+    progressElapsedAtPause = performance.now() - progressStart;
     clearInterval(timerId);
-    stopProgress();
+    cancelAnimationFrame(progressRAF);
+    progressWrap.style.opacity = '0.6';
     btnPause.innerHTML = '<span class="material-symbols-outlined">play_circle</span><span>Reanudar</span>';
   } else if (state === 'EN_PAUSA') {
     state = 'EN_JUEGO';
-    startProgress();
-    timerId = setInterval(drawNext, DRAW_INTERVAL_MS);
+    const remaining = currentInterval() - progressElapsedAtPause;
+    startProgress(progressElapsedAtPause);
+    timerId = setTimeout(() => {
+      drawNext();
+      timerId = setInterval(drawNext, currentInterval());
+    }, remaining);
     btnPause.innerHTML = '<span class="material-symbols-outlined">pause_circle</span><span>Pausar</span>';
   }
 }
