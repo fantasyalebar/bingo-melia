@@ -106,6 +106,7 @@ body::after {
   pointer-events: none; z-index: 0;
 }
 
+
 /* ===== PARTICLES CANVAS ===== */
 #particles {
   position: fixed; top: 0; left: 0;
@@ -292,51 +293,74 @@ body::after {
   pointer-events: none;
 }
 
-/* Bingo Ball → Rounded Square Card */
+/* Bingo Ball → Sphere */
 .ball-wrap {
   position: relative;
 }
 .ball-halo {
-  position: absolute; inset: -4px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  border-radius: 16px;
-  filter: blur(8px);
-  opacity: 0.25;
-  transition: opacity 1s;
+  position: absolute; inset: -12px;
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0.4;
+  transition: opacity 0.5s;
 }
-.ball-wrap:hover .ball-halo { opacity: 0.4; }
+.ball-wrap:hover .ball-halo { opacity: 0.6; }
 
 .bingo-ball {
   width: min(260px, 32vh); height: min(260px, 32vh);
-  border-radius: 12px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  position: relative;
-  background: var(--bg-lowest);
-  border: 1px solid rgba(212,175,55,0.1);
-  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  border-radius: 50%;
+  position: relative; overflow: hidden;
+  box-shadow:
+    inset -30px -30px 60px rgba(0,0,0,0.55),
+    inset 12px 12px 28px rgba(255,255,255,0.12),
+    0 20px 60px rgba(0,0,0,0.65);
 }
 .bingo-ball.animate { animation: ball-reveal 0.6s ease both; }
 
+/* White equatorial stripe — like a real bingo ball */
+.ball-stripe {
+  position: absolute; top: 50%; left: -10%;
+  width: 120%; height: 56%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.93);
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0;
+}
+/* Inner clip prevents text from bleeding outside the oval */
+.ball-stripe-inner {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0;
+  width: 70%; height: 70%;
+  overflow: hidden;
+}
 .ball-letter {
   font-family: 'Noto Serif', Georgia, serif;
-  font-size: 32px; font-weight: 300;
-  color: var(--gold);
-  letter-spacing: 0.2em;
+  font-size: clamp(10px, 1.4vh, 16px); font-weight: 700;
+  line-height: 1; letter-spacing: 0.2em;
   text-transform: uppercase;
-  margin-bottom: 2px;
 }
 .ball-number {
   font-family: 'Noto Serif', Georgia, serif;
-  font-size: min(120px, 15vh); font-weight: 700;
+  font-size: clamp(30px, 4.8vh, 52px); font-weight: 700;
   line-height: 1;
-  color: var(--text);
-  text-shadow: 0 0 20px rgba(242,202,80,0.4);
+  color: #111;
+}
+/* Specular highlight */
+.ball-shine {
+  position: absolute; top: 8%; left: 14%;
+  width: 28%; height: 18%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.55), transparent);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+  pointer-events: none;
 }
 
 .ball-empty {
   width: min(260px, 32vh); height: min(260px, 32vh);
-  border-radius: 12px;
+  border-radius: 50%;
   border: 2px dashed rgba(153,144,124,0.2);
   display: flex; align-items: center; justify-content: center;
 }
@@ -943,7 +967,7 @@ body::after {
       <button class="btn-icon" id="btn-sound" title="Sonido">
         <span class="material-symbols-outlined">volume_up</span>
       </button>
-      <button class="btn-icon" id="btn-fullscreen" title="Pantalla completa">
+<button class="btn-icon" id="btn-fullscreen" title="Pantalla completa">
         <span class="material-symbols-outlined" id="fs-icon">fullscreen</span>
       </button>
     </div>
@@ -990,11 +1014,28 @@ body::after {
     <span>¡BINGO!</span>
   </button>
   <div class="nav-divider"></div>
+  <button class="nav-btn nav-btn-ghost" id="btn-check" title="Vérifier les numéros">
+    <span class="material-symbols-outlined">checklist</span>
+    <span>Verificar</span>
+  </button>
+  <div class="nav-divider"></div>
   <button class="nav-btn nav-btn-filled" id="btn-new">
     <span class="material-symbols-outlined">refresh</span>
     <span>Nuevo Juego</span>
   </button>
 </nav>
+
+<!-- ===== OVERLAY VERIFICAR ===== -->
+<div id="overlay-check" class="overlay" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:150;background:rgba(13,13,13,0.97);">
+  <div id="check-ball-area" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div id="check-ball-display"></div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--outline);letter-spacing:0.25em;text-transform:uppercase;" id="check-counter-label"></div>
+  </div>
+  <button class="btn btn-outline" id="btn-stop-check" style="margin-top:8px;font-size:13px;padding:10px 32px;">
+    <span class="material-symbols-outlined" style="vertical-align:middle;font-size:18px;margin-right:6px;">stop</span>
+    Detener
+  </button>
+</div>
 
 <!-- ===== BINGO OVERLAY ===== -->
 <div id="overlay-bingo" class="overlay">
@@ -1009,6 +1050,7 @@ body::after {
   <div class="fin-sub">75 / 75</div>
   <button class="btn btn-gold" id="btn-new-fin">Nuevo Juego</button>
 </div>
+
 
 <script>
 // ======================================================================
@@ -1155,10 +1197,15 @@ function renderBall(num) {
   const col = getCol(num);
   ballDisplay.innerHTML =
     '<div class="ball-wrap">' +
-      '<div class="ball-halo"></div>' +
-      '<div class="bingo-ball animate">' +
-        '<div class="ball-letter" style="color:' + col.color + '">' + col.letter + '</div>' +
-        '<div class="ball-number">' + num + '</div>' +
+      '<div class="ball-halo" style="background:radial-gradient(circle,' + col.color + ' 0%,transparent 70%)"></div>' +
+      '<div class="bingo-ball animate" style="background:radial-gradient(circle at 35% 35%,rgba(255,255,255,0.18),' + col.color + ' 48%,rgba(0,0,0,0.35))">' +
+        '<div class="ball-stripe">' +
+          '<div class="ball-stripe-inner">' +
+            '<span class="ball-letter" style="color:' + col.color + '">' + col.letter + '</span>' +
+            '<span class="ball-number">' + num + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ball-shine"></div>' +
       '</div>' +
     '</div>';
 }
@@ -1377,7 +1424,7 @@ function startGame() {
 
   showScreen('game');
   initAudio();
-  startAmbientMusic();
+  // startAmbientMusic(); — disabled, was playing constant background drone
 
   state = 'EN_JUEGO';
   particleMode = 'ambient';
@@ -1385,6 +1432,8 @@ function startGame() {
   drawNext();
   timerId = setInterval(drawNext, currentInterval());
 }
+
+// Ambient music disabled — was causing constant background drone
 
 function pauseGame() {
   if (state === 'EN_JUEGO') {
@@ -1396,7 +1445,7 @@ function pauseGame() {
     btnPause.innerHTML = '<span class="material-symbols-outlined">play_circle</span><span>Reanudar</span>';
   } else if (state === 'EN_PAUSA') {
     state = 'EN_JUEGO';
-    const remaining = currentInterval() - progressElapsedAtPause;
+    const remaining = Math.max(1000, currentInterval() - progressElapsedAtPause);
     startProgress(progressElapsedAtPause);
     timerId = setTimeout(() => {
       drawNext();
@@ -1415,6 +1464,7 @@ function declareBingo() {
   particleMode = 'victory';
   if (soundEnabled) playVictorySound();
   showScreen('bingo');
+  if (window.playBingoWinner) playBingoWinner();
 }
 
 function endGame() {
@@ -1876,6 +1926,77 @@ document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
 btnFs.addEventListener('click', toggleFullscreen);
 
+// ======================================================================
+//  TOUCHE B / BOUTON BINGO — Lance "BINGO WINNER.mp4" en plein écran
+// ======================================================================
+(function() {
+  const player = document.createElement('div');
+  player.style.cssText = 'display:none;position:fixed;inset:0;z-index:9998;background:#000;';
+  const vid = document.createElement('video');
+  vid.src = 'BINGO WINNER.mp4';
+  vid.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+  vid.controls = false;
+  const closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.5);border:none;border-radius:50%;width:48px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+  closeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:26px;color:#fff;">close</span>';
+  player.appendChild(vid);
+  player.appendChild(closeBtn);
+  document.body.appendChild(player);
+
+  function close() {
+    vid.pause();
+    player.style.display = 'none';
+  }
+  closeBtn.addEventListener('click', close);
+  vid.addEventListener('ended', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape' && player.style.display !== 'none') close();
+  });
+
+  window.playBingoWinner = function() {
+    player.style.display = 'block';
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+  };
+})();
+
+// ======================================================================
+//  TOUCHE E — Lance "ECHEC BINGO.mp4" en plein écran
+// ======================================================================
+(function() {
+  const player = document.createElement('div');
+  player.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:#000;';
+  const vid = document.createElement('video');
+  vid.src = 'ECHEC BINGO.mp4';
+  vid.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+  vid.controls = false;
+  const closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.5);border:none;border-radius:50%;width:48px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+  closeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:26px;color:#fff;">close</span>';
+  player.appendChild(vid);
+  player.appendChild(closeBtn);
+  document.body.appendChild(player);
+
+  function open() {
+    if (state === 'EN_JUEGO') pauseGame();
+    player.style.display = 'block';
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+  }
+  function close() {
+    vid.pause();
+    player.style.display = 'none';
+    if (state === 'EN_PAUSA') pauseGame();
+  }
+  closeBtn.addEventListener('click', close);
+  vid.addEventListener('ended', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.code === 'KeyE') open();
+    if (e.code === 'Escape' && player.style.display !== 'none') close();
+  });
+})();
+
 // Copier le logo du header vers la page d'accueil
 (function() {
   const headerImg = document.querySelector('.header-logo img');
@@ -1885,6 +2006,105 @@ btnFs.addEventListener('click', toggleFullscreen);
     welcomeImg.style.opacity = '';
   }
 })();
+
+// ======================================================================
+//  MODE VERIFICAR — rejoue tous les numéros tirés avec voix espagnole
+// ======================================================================
+const overlayCheck     = document.getElementById('overlay-check');
+const checkBallDisplay = document.getElementById('check-ball-display');
+const checkCounterLbl  = document.getElementById('check-counter-label');
+const btnCheck         = document.getElementById('btn-check');
+const btnStopCheck     = document.getElementById('btn-stop-check');
+
+let checkTimer   = null;
+let checkIndex   = 0;
+let checkRunning = false;
+
+// Noms des nombres en espagnol (1-75)
+const ES_NUMS = ['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez',
+  'once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte',
+  'veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta',
+  'treinta y uno','treinta y dos','treinta y tres','treinta y cuatro','treinta y cinco','treinta y seis','treinta y siete','treinta y ocho','treinta y nueve','cuarenta',
+  'cuarenta y uno','cuarenta y dos','cuarenta y tres','cuarenta y cuatro','cuarenta y cinco','cuarenta y seis','cuarenta y siete','cuarenta y ocho','cuarenta y nueve','cincuenta',
+  'cincuenta y uno','cincuenta y dos','cincuenta y tres','cincuenta y cuatro','cincuenta y cinco','cincuenta y seis','cincuenta y siete','cincuenta y ocho','cincuenta y nueve','sesenta',
+  'sesenta y uno','sesenta y dos','sesenta y tres','sesenta y cuatro','sesenta y cinco','sesenta y seis','sesenta y siete','sesenta y ocho','sesenta y nueve','setenta',
+  'setenta y uno','setenta y dos','setenta y tres','setenta y cuatro','setenta y cinco'];
+
+function speakNumber(num) {
+  if (!window.speechSynthesis) return;
+  const col = getCol(num);
+  const utterance = new SpeechSynthesisUtterance(col.letter + '... ' + ES_NUMS[num]);
+  utterance.lang = 'es-MX';
+  utterance.rate = 0.88;
+  utterance.pitch = 1.05;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utterance);
+}
+
+function renderCheckBall(num) {
+  const col = getCol(num);
+  checkBallDisplay.innerHTML =
+    '<div class="ball-wrap">' +
+      '<div class="ball-halo" style="background:radial-gradient(circle,' + col.color + ' 0%,transparent 70%)"></div>' +
+      '<div class="bingo-ball animate" style="background:radial-gradient(circle at 35% 35%,rgba(255,255,255,0.18),' + col.color + ' 48%,rgba(0,0,0,0.35))">' +
+        '<div class="ball-stripe">' +
+          '<div class="ball-stripe-inner">' +
+            '<span class="ball-letter" style="color:' + col.color + '">' + col.letter + '</span>' +
+            '<span class="ball-number">' + num + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ball-shine"></div>' +
+      '</div>' +
+    '</div>';
+}
+
+function checkStep() {
+  if (!checkRunning || checkIndex >= drawIndex) {
+    stopCheck();
+    return;
+  }
+  const num = numbers[checkIndex];
+  checkIndex++;
+  checkCounterLbl.textContent = checkIndex + ' / ' + drawIndex;
+  renderCheckBall(num);
+  speakNumber(num);
+  // Délai : 3s par numéro (ajustable)
+  checkTimer = setTimeout(checkStep, 3000);
+}
+
+function startCheck() {
+  if (drawIndex === 0) return; // rien à vérifier
+  // Pause le jeu si en cours
+  if (state === 'EN_JUEGO') pauseGame();
+  checkIndex  = 0;
+  checkRunning = true;
+  overlayCheck.style.display = 'flex';
+  checkStep();
+}
+
+function stopCheck() {
+  checkRunning = false;
+  clearTimeout(checkTimer);
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  overlayCheck.style.display = 'none';
+  checkBallDisplay.innerHTML = '';
+}
+
+btnCheck.addEventListener('click', () => {
+  if (state !== 'EN_JUEGO' && state !== 'EN_PAUSA') return;
+  startCheck();
+});
+
+btnStopCheck.addEventListener('click', stopCheck);
+
+// Touche C pour lancer/arrêter
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.code === 'KeyC') {
+    if (checkRunning) stopCheck();
+    else if (state === 'EN_JUEGO' || state === 'EN_PAUSA') startCheck();
+  }
+});
 
 </script>
 </body>
