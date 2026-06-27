@@ -4,3 +4,6 @@
 
 # Tasks (local workflow)
 tasks/
+
+# Vidéos (gardées en local, pas sur GitHub)
+*.mp4
